@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.collectionBehavior.insert(.fullScreenNone)
 
         let mainMenu = NSMenu()
+
         let mainMenuItem = NSMenuItem()
         let subMenu = NSMenu(title: "MainMenu")
         let quitMenuItem = NSMenuItem(
@@ -33,7 +34,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
         subMenu.addItem(quitMenuItem)
         mainMenuItem.submenu = subMenu
-        mainMenu.items = [mainMenuItem]
+
+        let aspectRatioMenu = NSMenu(title: "Aspect Ratio")
+        let aspectRatioMenuItem = NSMenuItem()
+        for aspectRatio in AspectRatio.allCases {
+            let menuItem = NSMenuItem(
+                title: aspectRatio.description,
+                action: #selector(viewController.didSelectAspectRatio),
+                keyEquivalent: ""
+            )
+            menuItem.target = viewController
+            menuItem.representedObject = aspectRatio
+            aspectRatioMenu.addItem(menuItem)
+        }
+        aspectRatioMenuItem.submenu = aspectRatioMenu
+
+        mainMenu.items = [mainMenuItem, aspectRatioMenuItem]
         NSApplication.shared.mainMenu = mainMenu
 
         store.dispatch(AppDelegateAction.didFinishLaunching)

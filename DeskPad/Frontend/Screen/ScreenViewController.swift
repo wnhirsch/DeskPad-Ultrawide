@@ -37,21 +37,7 @@ class ScreenViewController: SubscriberViewController<ScreenViewData>, NSWindowDe
 
         let settings = CGVirtualDisplaySettings()
         settings.hiDPI = 1
-        settings.modes = [
-            // 16:9
-            CGVirtualDisplayMode(width: 3840, height: 2160, refreshRate: 60),
-            CGVirtualDisplayMode(width: 2560, height: 1440, refreshRate: 60),
-            CGVirtualDisplayMode(width: 1920, height: 1080, refreshRate: 60),
-            CGVirtualDisplayMode(width: 1600, height: 900, refreshRate: 60),
-            CGVirtualDisplayMode(width: 1366, height: 768, refreshRate: 60),
-            CGVirtualDisplayMode(width: 1280, height: 720, refreshRate: 60),
-            // 16:10
-            CGVirtualDisplayMode(width: 2560, height: 1600, refreshRate: 60),
-            CGVirtualDisplayMode(width: 1920, height: 1200, refreshRate: 60),
-            CGVirtualDisplayMode(width: 1680, height: 1050, refreshRate: 60),
-            CGVirtualDisplayMode(width: 1440, height: 900, refreshRate: 60),
-            CGVirtualDisplayMode(width: 1280, height: 800, refreshRate: 60),
-        ]
+        settings.modes = AspectRatio._16_9.resolutions
         display.apply(settings)
     }
 
@@ -117,5 +103,15 @@ class ScreenViewController: SubscriberViewController<ScreenViewData>, NSWindowDe
             y: (view.frame.height - clickedPoint.y) / view.frame.height * screenResolution.height
         )
         store.dispatch(MouseLocationAction.requestMove(toPoint: onScreenPoint))
+    }
+
+    @objc func didSelectAspectRatio(_ sender: NSMenuItem) {
+        guard let aspectRatio = sender.representedObject as? AspectRatio else { return }
+
+        let settings = CGVirtualDisplaySettings()
+        settings.hiDPI = 1
+        settings.modes = aspectRatio.resolutions
+        display.apply(settings)
+        store.dispatch(ScreenConfigurationAction.set(resolution: aspectRatio.maxResolution, scaleFactor: 1))
     }
 }
